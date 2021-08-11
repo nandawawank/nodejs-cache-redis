@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  redis:
+    container_name: redis
+    image: redis:6.2.4-alpine
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+    - 6379:6379
+    volumes:
+    - ./configs/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - node_network
+  backend:
+    image: node:14
+    working_dir: /usr/src/app
+    container_name: nodejs-caching-redis
+    ports:
+      - 3001:3001
+    environment:
+      - NAME=nodejs-caching-redis
+      - PORT=yourport
+      - REDIS_PORT=yourport
+      - REDIS_PASSWORD=yourpassword
+      - REDIS_DEFAULT_EXPIRATION=yourexpiration
+    networks:
+      - node_network
+    volumes:
+      - .:/usr/src/app
+    command: sh -c "npm install & npm run dev"
+
+networks:
+  node_network:
